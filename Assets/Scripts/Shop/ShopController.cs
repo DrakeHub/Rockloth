@@ -33,7 +33,6 @@ public class ShopController : MonoBehaviour
 
     private void OnBuyButtonClicked()
     {
-        Debug.Log("Buy button in controller");
         if (selectedClothingItem != null)
         {
             shopModel.BuyItem(selectedClothingItem);

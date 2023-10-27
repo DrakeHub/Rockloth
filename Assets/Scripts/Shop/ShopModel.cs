@@ -16,11 +16,9 @@ public class ShopModel : MonoBehaviour
 
     public void BuyItem(ClothingItem item)
     {
-        Debug.Log("Buy Item");
 
         if (CanPlayerAfford(item) && !inventoryModel.IsItemOwned(item))
         {
-            Debug.Log("Buy Item yau");
             inventoryModel.SpendCurrency(item.price);
             inventoryModel.AddToOwnedItems(item);
             item.isBought = true;
