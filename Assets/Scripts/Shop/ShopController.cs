@@ -11,6 +11,7 @@ public class ShopController : MonoBehaviour
         // Events in the view
         shopView.OnItemSelect += OnItemSelected;
         shopView.OnBuyButtonClick += OnBuyButtonClicked;
+        shopView.IfItemAlreadyBought += IfAlreadyBought;
 
         // Get the inventory model from the shop model
         InventoryModel inventoryModel = shopModel.GetInventoryModel();
@@ -39,5 +40,10 @@ public class ShopController : MonoBehaviour
             selectedClothingItem = null;
             shopView.DisplayShop(shopModel.clothingInventory);
         }
+    }
+
+    private void IfAlreadyBought(ClothingItem item)
+    {
+        shopModel.AddBoughtToInventory(item);
     }
 }

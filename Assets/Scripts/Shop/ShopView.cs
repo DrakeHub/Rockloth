@@ -11,8 +11,10 @@ public class ShopView : MonoBehaviour
     public TextMeshProUGUI shopkeeperDialog;
     public Button buyButton;
 
-    public event Action<ClothingItem, GameObject> OnItemSelect; // To inform Controller
+    public event Action<ClothingItem, GameObject> OnItemSelect;
     public event Action OnBuyButtonClick;
+    public event Action<ClothingItem> IfItemAlreadyBought;
+
 
     public void DisplayShop(List<ClothingItem> items)
     {
@@ -38,10 +40,11 @@ public class ShopView : MonoBehaviour
         itemPriceText.text = item.price.ToString();
         itemIcon.color = item.isSelected ? Color.yellow : Color.white;
 
-        //Disable button to prevent purchase
+        //If item was bought previously, disable button to prevent purchase
         if (item.isBought) 
-        { 
-           itemUI.GetComponent<Button>().interactable = false;
+        {
+            IfItemAlreadyBought.Invoke(item);
+            itemUI.GetComponent<Button>().interactable = false;
         }
 
         // Attach the ClothingItemScript button script to the prefab's item button

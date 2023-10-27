@@ -28,6 +28,14 @@ public class ShopModel : MonoBehaviour
         }
     }
 
+    public void AddBoughtToInventory(ClothingItem item)
+    {
+        if (!inventoryModel.IsItemOwned(item))
+        {
+            inventoryModel.AddToOwnedItems(item);
+        }
+    }
+
     private bool CanPlayerAfford(ClothingItem item)
     {
         return inventoryModel.GetInGameCurrency() >= item.price;
