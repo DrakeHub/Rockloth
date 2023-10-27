@@ -13,29 +13,10 @@ public class ClothingItem : ScriptableObject
     public bool isSelected;
     public bool isBought = false;
 
-
-    public void Equip(InventoryModel player)
-    {
-        if (!isEquipped)
-        {
-            isEquipped = true;
-            player.UpdateEquippedOutfit(this);
-        }
-    }
-
-    public void Unequip(InventoryModel player)
-    {
-        if (isEquipped)
-        {
-            isEquipped = false;
-            player.UnequipOutfit(this);
-        }
-    }
 }
 
 public enum ClothingType
 {
     Hat,
-    Dress
-    // Add more clothing types as needed
+    Torso
 }

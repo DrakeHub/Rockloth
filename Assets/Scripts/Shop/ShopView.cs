@@ -6,8 +6,10 @@ using UnityEngine.UI;
 
 public class ShopView : MonoBehaviour
 {
-    public GridLayoutGroup gridLayout;
+    public GameObject shopPanel;
     public GameObject clothingItemPrefab;
+
+    public GridLayoutGroup gridLayout;
     public TextMeshProUGUI shopkeeperDialog;
     public Button buyButton;
 
@@ -15,6 +17,11 @@ public class ShopView : MonoBehaviour
     public event Action OnBuyButtonClick;
     public event Action<ClothingItem> IfItemAlreadyBought;
 
+    private bool isShopVisible = false;
+    public bool IsShopVisible
+    {
+        get { return isShopVisible; }
+    }
 
     public void DisplayShop(List<ClothingItem> items)
     {
@@ -25,6 +32,13 @@ public class ShopView : MonoBehaviour
             CreateCloth(item);
         }
         buyButton.onClick.AddListener(() => HandleBuyButton());
+    }
+
+    public void ToggleShop(bool isVisible)
+    {
+        isShopVisible = isVisible;
+        shopPanel.SetActive(isVisible);
+
     }
     private void CreateCloth(ClothingItem item)
     {
@@ -38,7 +52,6 @@ public class ShopView : MonoBehaviour
         itemIcon.sprite = item.sprite;
         itemNameText.text = item.itemName;
         itemPriceText.text = item.price.ToString();
-        itemIcon.color = item.isSelected ? Color.yellow : Color.white;
 
         //If item was bought previously, disable button to prevent purchase
         if (item.isBought) 
@@ -51,10 +64,6 @@ public class ShopView : MonoBehaviour
         ClothingItemScript clothingItemScript = itemUI.GetComponentInChildren<ClothingItemScript>();
         clothingItemScript.item = item;
         clothingItemScript.OnItemSelected += HandleItemSelection;
-    }
-    public void ShowShopkeeperDialog(string dialog)
-    {
-        shopkeeperDialog.text = dialog;
     }
 
     private void ClearShopItems()
@@ -69,15 +78,10 @@ public class ShopView : MonoBehaviour
     {
         // Trigger the item selection event
         OnItemSelect?.Invoke(item, prefab);
-        //Debug.Log(item, prefab);
     }
 
     private void HandleBuyButton()
     {
-        // Handle the purchase logic here, using the selected item
-        // For example, deduct the item's price from the player's currency
-
-        // Trigger the "Buy" button click event
         OnBuyButtonClick?.Invoke();
     }
 }

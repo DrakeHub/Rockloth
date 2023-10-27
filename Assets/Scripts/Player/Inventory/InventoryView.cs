@@ -1,17 +1,27 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InventoryView : MonoBehaviour
 {
     public GameObject inventoryPanel;
-    public Image hatSlot;
-    public Image dressSlot;
-    public Button equipHatButton;
-    public Button equipDressButton;
+    public GameObject inventoryItemPrefab;
 
-    public event Action<ClothingItem> OnHatEquip;
-    public event Action<ClothingItem> OnDressEquip;
+    private GameObject hatInstance;
+    private GameObject torsoInstance;
+
+    public PlayerController player;
+
+    [SerializeField] private List<GameObject> hatPrefabs;
+    private bool hatCreated;
+    [SerializeField] private List<GameObject> torsoPrefabs;
+    private bool torsoCreated;
+
+
+    public GridLayoutGroup gridLayout;
+    public Image hatSlot;
+    public Image torsoSlot;
 
     private bool isInventoryVisible = false;
     public bool IsInventoryVisible
@@ -19,49 +29,102 @@ public class InventoryView : MonoBehaviour
         get { return isInventoryVisible; }
     }
 
+    public void DisplayInventory(List<ClothingItem> items)
+    {
+        ClearInventoryItems();
+
+        foreach (ClothingItem item in items)
+        {
+            CreateBoughtCloth(item);
+            Debug.Log("aDDED");
+        }
+    }
     public void ToggleInventory(bool isVisible)
     {
         isInventoryVisible = isVisible;
         inventoryPanel.SetActive(isVisible);
+        
+    }
+    private void CreateBoughtCloth(ClothingItem item)
+    {
+        //Get all prefab components
+        GameObject itemUI = Instantiate(inventoryItemPrefab, gridLayout.transform);
+        Image itemIcon = itemUI.transform.Find("ItemImage").GetComponent<Image>();
+        TMPro.TextMeshProUGUI itemNameText = itemUI.transform.Find("Name").GetComponent<TMPro.TextMeshProUGUI>();
+
+        //Initialize Clothing Item with Clothing Item data
+        itemIcon.sprite = item.sprite;
+        itemNameText.text = item.itemName;
+
+        // Attach the ClothingItemScript button script to the prefab's item button
+        InventoryItem inventoryItemScript = itemUI.GetComponentInChildren<InventoryItem>();
+        inventoryItemScript.item = item;
+        inventoryItemScript.OnItemBoughtSelected += HandleBoughtItemSelection;
     }
 
-    public void DisplayInventory(InventoryModel inventoryModel)
+    private void HandleBoughtItemSelection(ClothingItem item)
     {
-        if (inventoryModel.ownedClothing != null)
+        if(item.clothingType == ClothingType.Hat)
         {
-            // Implement logic to display owned clothing in the inventory UI
-        }
+            hatSlot.gameObject.SetActive(true);
+            hatSlot.sprite = item.sprite;
+            for (int i = 0; i < hatPrefabs.Count; i++)
+            {
+                if (item.itemName == hatPrefabs[i].name)
+                {
+                    if (hatInstance != null)
+                    {                        
+                        Destroy(hatInstance);
+                        hatInstance = null;
 
-        if (inventoryModel.EquippedHat != null)
-        {
-            // Display the equipped hat in the hat slot
-            hatSlot.sprite = inventoryModel.EquippedHat.sprite;
-        }
-        else
-        {
-            // Clear the hat slot if no hat is equipped
-            hatSlot.sprite = null;
-        }
+                    }
+                    if (hatInstance == null)
+                    {
+                        hatInstance = Instantiate(hatPrefabs[i]);
+                        hatInstance.transform.parent = player.gameObject.transform;
+                        hatInstance.transform.position = player.transform.position;
+                        hatCreated = true;
 
-        if (inventoryModel.EquippedDress != null)
-        {
-            // Display the equipped dress in the dress slot
-            dressSlot.sprite = inventoryModel.EquippedDress.sprite;
+                        player.hatAnimator =  hatInstance.GetComponent<Animator>();
+
+                    }
+                }
+            }
         }
-        else
+        else if (item.clothingType == ClothingType.Torso)
         {
-            // Clear the dress slot if no dress is equipped
-            dressSlot.sprite = null;
+            torsoSlot.gameObject.SetActive(true);
+            torsoSlot.sprite = item.sprite;
+            for (int i = 0; i < torsoPrefabs.Count; i++)
+            {
+                if (item.itemName == torsoPrefabs[i].name)
+                {
+                    if (torsoInstance != null)
+                    {
+                        Destroy(torsoInstance);
+                        torsoInstance = null;
+
+                    }
+                    if (torsoInstance == null)
+                    {
+                        torsoInstance = Instantiate(torsoPrefabs[i]);
+                        torsoInstance.transform.parent = player.gameObject.transform;
+                        torsoInstance.transform.position = player.transform.position;
+                        torsoCreated = true;
+
+                        player.torsoAnimator = torsoInstance.GetComponent<Animator>();
+
+                    }
+                }
+            }
         }
     }
 
-    public void OnEquipHatClick()
+    private void ClearInventoryItems()
     {
-        // Implement logic to equip a hat
-    }
-
-    public void OnEquipDressClick()
-    {
-        // Implement logic to equip a dress
+        foreach (Transform child in gridLayout.transform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 }

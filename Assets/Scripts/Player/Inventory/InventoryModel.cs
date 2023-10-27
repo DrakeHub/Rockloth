@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class InventoryModel : MonoBehaviour
 {
-    public List<ClothingItem> ownedClothing = new List<ClothingItem>();
+    public List<ClothingItem> ownedClothing;
 
     private int inGameCurrency;
     public ClothingItem EquippedHat { get; private set; }
@@ -33,31 +33,5 @@ public class InventoryModel : MonoBehaviour
     {
         ownedClothing.Add(item);
         Debug.Log("Added");
-    }
-
-    public void UpdateEquippedOutfit(ClothingItem item)
-    {
-        if (item.clothingType == ClothingType.Hat)
-        {
-            EquippedHat = item;
-        }
-        else if (item.clothingType == ClothingType.Dress)
-        {
-            EquippedDress = item;
-        }
-        // Implement logic to equip the item on the player's character
-    }
-
-    public void UnequipOutfit(ClothingItem item)
-    {
-        if (item.clothingType == ClothingType.Hat)
-        {
-            EquippedHat = null;
-        }
-        else if (item.clothingType == ClothingType.Dress)
-        {
-            EquippedDress = null;
-        }
-        // Implement logic to unequip the item from the player's character
     }
 }

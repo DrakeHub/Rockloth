@@ -1,23 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float acceleration = 10f;
-    [SerializeField] private float deceleration = 15f;
+    [SerializeField] private float moveSpeed = 2f;
+    [SerializeField] private float acceleration = 0.1f;
+    [SerializeField] private float deceleration = 0.1f;
 
     [Header("Interaction Settings")]
     [SerializeField] private KeyCode interactKey = KeyCode.E;
     [SerializeField] private KeyCode inventoryKey = KeyCode.I; // Change to the key you prefer
+    
+    [SerializeField] private GameObject shop;
+
 
     private Rigidbody2D rb;
-    private Animator animator;
+    private Animator playerAnimator;
+    public Animator hatAnimator;
+    public Animator torsoAnimator;
 
     private Vector2 movementInput;
     private bool isInteracting = false;
+    private bool isNearShop = false;
+    private bool flag = false;
 
     private Vector2 currentVelocity;
 
@@ -27,7 +32,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent <Animator>();
+        playerAnimator = GetComponent <Animator>();
     }
 
     private void Update()
@@ -35,7 +40,7 @@ public class PlayerController : MonoBehaviour
         GetInput();
         UpdateAnimation();
         HandleInteraction();
-        OpenInventory(); // Check for opening inventory
+        OpenInventory();
     }
 
     private void FixedUpdate()
@@ -53,13 +58,64 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateAnimation()
     {
-        // Implement your animation logic here
+        if (movementInput.x != 0 || movementInput.y != 0)
+        {
+            playerAnimator.SetFloat("X", movementInput.x);
+            playerAnimator.SetFloat("Y", movementInput.y);
+
+            playerAnimator.SetBool("isWalking", true);
+
+            if (hatAnimator != null)
+            {
+                hatAnimator.SetFloat("X", movementInput.x);
+                hatAnimator.SetFloat("Y", movementInput.y);
+
+                hatAnimator.SetBool("isWalking", true);
+            }
+            if (torsoAnimator != null)
+            {
+                torsoAnimator.SetFloat("X", movementInput.x);
+                torsoAnimator.SetFloat("Y", movementInput.y);
+
+                torsoAnimator.SetBool("isWalking", true);
+            }
+        }
+        else
+        {            
+            if (hatAnimator != null)
+            {
+                hatAnimator.SetBool("isWalking", false);
+
+            }
+            if (torsoAnimator != null)
+            {
+                torsoAnimator.SetBool("isWalking", false);
+
+            }
+
+            playerAnimator.SetBool("isWalking", false);
+
+
+        }
     }
 
     private void HandleInteraction()
     {
         if (isInteracting)
         {
+
+            if (isNearShop) // Adjust the key as needed
+            {
+                flag = !flag;
+                shop.gameObject.SetActive(flag);
+
+            }
+
+            if (!isNearShop && isInteracting && shop.gameObject.activeSelf == true)
+            {
+                shop.gameObject.SetActive(false);
+            }
+
             if (inventoryView.IsInventoryVisible)
             {
                 // Handle interactions with the open inventory view
@@ -89,8 +145,25 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(inventoryKey))
         {
-            // Toggle the inventory view
             inventoryView.ToggleInventory(!inventoryView.IsInventoryVisible);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+
+        if (collision.gameObject.CompareTag("ClothesShop"))
+        {
+            isNearShop = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("ClothesShop"))
+        {
+            isNearShop = false;
+            shop.gameObject.SetActive(false);
         }
     }
 }

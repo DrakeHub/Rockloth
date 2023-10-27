@@ -10,15 +10,15 @@ public class ClothingItemScript : MonoBehaviour
     public Image itemIcon;
     public TextMeshProUGUI itemName;
     public TextMeshProUGUI itemPrice;
-    private Button button;
+    private Button buyButton;
 
     //Actions
     public event Action<ClothingItem, GameObject> OnItemSelected;
 
     private void Start()
     {
-        button = GetComponent<Button>();
-        button.onClick.AddListener(HandleButtonClick);
+        buyButton = GetComponent<Button>();
+        buyButton.onClick.AddListener(HandleButtonClick);
 
         // Initialize UI elements with item data
         itemIcon.sprite = item.sprite;
@@ -31,7 +31,6 @@ public class ClothingItemScript : MonoBehaviour
         if (!item.isBought)
         {
             OnItemSelected?.Invoke(item, this.gameObject);
-            Debug.Log("yazzzz");
         }
     }
 }
