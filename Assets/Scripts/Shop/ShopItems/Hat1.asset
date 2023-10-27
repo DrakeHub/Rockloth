@@ -18,5 +18,5 @@ MonoBehaviour:
   clothingType: 0
   description: Best pants in all caves around!
   isEquipped: 0
-  isSelected: 1
+  isSelected: 0
   isBought: 0

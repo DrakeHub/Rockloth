@@ -18,5 +18,5 @@ MonoBehaviour:
   clothingType: 1
   description: 
   isEquipped: 0
-  isSelected: 1
-  isBought: 1
+  isSelected: 0
+  isBought: 0
